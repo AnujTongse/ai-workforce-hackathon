@@ -169,6 +169,19 @@ def cancel_task(task_id: str):
                "Administrator halted running workflow safely.", None, {})
     return {"message": "Task cancelled safely.", "task_id": task_id}
 
+@app.post("/api/tasks/{task_id}/resume")
+def resume_task_pipeline(task_id: str, force_success: bool = False, reviewer_name: str = "Authorized Reviewer"):
+    conn = get_connection()
+    cursor = conn.cursor()
+    cursor.execute("SELECT status FROM tasks WHERE task_id = ?", (task_id,))
+    row = cursor.fetchone()
+    conn.close()
+    if not row:
+        raise HTTPException(status_code=404, detail="Task not found")
+
+    res = Orchestrator.resume_task(task_id, force_success=force_success, reviewer_name=reviewer_name)
+    return res
+
 @app.get("/api/approvals")
 def list_approvals(pending_only: bool = False):
     conn = get_connection()

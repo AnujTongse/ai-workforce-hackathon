@@ -24,6 +24,37 @@ export default function App() {
   const [activeTab, setActiveTabState] = useState(getInitialTab);
   const [userRole, setUserRole] = useState('business_owner');
 
+  // Dark Mode Theme State
+  const [theme, setTheme] = useState(() => {
+    try {
+      const params = new URLSearchParams(window.location.search);
+      const urlTheme = params.get('theme');
+      if (urlTheme === 'dark' || urlTheme === 'light') return urlTheme;
+      const saved = localStorage.getItem('theme');
+      if (saved) return saved;
+      return window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
+        ? 'dark'
+        : 'light';
+    } catch {
+      return 'light';
+    }
+  });
+
+  useEffect(() => {
+    try {
+      if (theme === 'dark') {
+        document.documentElement.classList.add('dark');
+      } else {
+        document.documentElement.classList.remove('dark');
+      }
+      localStorage.setItem('theme', theme);
+    } catch {}
+  }, [theme]);
+
+  const handleToggleTheme = () => {
+    setTheme((prev) => (prev === 'dark' ? 'light' : 'dark'));
+  };
+
   const setActiveTab = (tabId) => {
     setActiveTabState(tabId);
     try {
@@ -196,8 +227,37 @@ export default function App() {
     await loadData(true);
   };
 
+  // Resume or manually approve an escalated task
+  const handleResumeTask = async (taskId, forceSuccess = false) => {
+    try {
+      await api.resumeTask(taskId, forceSuccess, userRole === 'reviewer' ? 'Elena Rostova (Compliance)' : 'Alex Chen (Owner)');
+      showToast(forceSuccess ? `Step bypassed and marked verified. Workflow resumed.` : `Workflow retry initiated.`, 'success');
+      await loadData(true);
+      if (selectedTask?.task_id === taskId) {
+        await handleSelectTask(taskId);
+      }
+    } catch (err) {
+      showToast(`Resume failed: ${err.message}`, 'error');
+    }
+  };
+
+  // Turn off simulator and retry failed step
+  const handleTurnOffSimulatorAndRetry = async (taskId) => {
+    try {
+      await api.simulateFailure('off');
+      await api.resumeTask(taskId, false, 'Operator Recovery');
+      showToast('Simulation turned off. Workflow retry initiated cleanly.', 'success');
+      await loadData(true);
+      if (selectedTask?.task_id === taskId) {
+        await handleSelectTask(taskId);
+      }
+    } catch (err) {
+      showToast(`Retry failed: ${err.message}`, 'error');
+    }
+  };
+
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
       <Navbar
         activeTab={activeTab}
         setActiveTab={setActiveTab}
@@ -205,6 +265,9 @@ export default function App() {
         onResetDemo={handleResetDemo}
         userRole={userRole}
         setUserRole={setUserRole}
+        theme={theme}
+        onToggleTheme={handleToggleTheme}
+        onDisableSimulation={() => handleSimulateFailure('off')}
       />
 
       {/* Toast Notification */}
@@ -215,7 +278,7 @@ export default function App() {
               ? 'bg-rose-600 text-white'
               : toastMessage.type === 'success'
               ? 'bg-emerald-600 text-white'
-              : 'bg-slate-900 text-white'
+              : 'bg-slate-900 dark:bg-slate-800 text-white border border-slate-700'
           }`}>
             <span>{toastMessage.msg}</span>
           </div>
@@ -235,9 +298,13 @@ export default function App() {
               tasks={tasks}
               selectedTask={selectedTask}
               selectedTaskDetails={selectedTaskDetails}
+              approvals={approvals}
               onSelectTask={handleSelectTask}
               onExecutePlan={handleExecutePlan}
               onCancelTask={handleCancelTask}
+              onResumeTask={handleResumeTask}
+              onTurnOffSimulatorAndRetry={handleTurnOffSimulatorAndRetry}
+              onDecideApproval={handleDecideApproval}
               onOpenApproval={() => setActiveTab('approvals')}
               onRefreshDetails={handleSelectTask}
             />
@@ -282,10 +349,10 @@ export default function App() {
       </main>
 
       {/* Minimal Footer */}
-      <footer className="bg-white border-t border-slate-200 py-4 text-center text-xs text-slate-500">
+      <footer className="bg-white dark:bg-slate-900 border-t border-slate-200 dark:border-slate-800 py-4 text-center text-xs text-slate-500 dark:text-slate-400 transition-colors">
         <div className="max-w-7xl mx-auto px-4 flex flex-wrap items-center justify-between gap-2">
           <span>AI Workforce for Businesses • Autonomous Multi-Agent Orchestration MVP</span>
-          <span className="text-[11px] text-slate-400">
+          <span className="text-[11px] text-slate-400 dark:text-slate-500">
             SRS v1.0 • Built with Python FastAPI, SQLite, React & Tailwind CSS
           </span>
         </div>

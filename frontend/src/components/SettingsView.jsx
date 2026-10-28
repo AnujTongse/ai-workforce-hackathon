@@ -41,25 +41,25 @@ export default function SettingsView({ settings, onUpdateSettings }) {
   return (
     <div className="space-y-6">
       {/* Top Banner */}
-      <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs flex flex-wrap items-center justify-between gap-4 transition-colors">
         <div>
           <div className="flex items-center gap-2">
-            <Settings className="w-5 h-5 text-indigo-600" />
-            <h2 className="text-base font-semibold text-slate-900">
+            <Settings className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">
               System Policy & Orchestration Parameters
             </h2>
-            <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-slate-100 text-slate-800">
+            <span className="text-xs px-2.5 py-0.5 rounded-full font-bold bg-slate-100 dark:bg-slate-800 text-slate-800 dark:text-slate-300 border border-slate-200 dark:border-slate-700">
               SRS FR-30 Configurable
             </span>
           </div>
-          <p className="text-xs text-slate-500 mt-1 max-w-2xl">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1 max-w-2xl">
             Configure risk thresholds, retry policies, and sandbox simulation mode without modifying core orchestration code (NFR-14).
           </p>
         </div>
 
         {savedSuccess && (
-          <div className="flex items-center gap-1.5 text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 px-3 py-1.5 rounded-lg">
-            <CheckCircle2 className="w-4 h-4 text-emerald-600" />
+          <div className="flex items-center gap-1.5 text-xs text-emerald-700 dark:text-emerald-300 bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 px-3 py-1.5 rounded-lg">
+            <CheckCircle2 className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
             <span>Settings saved successfully!</span>
           </div>
         )}
@@ -67,10 +67,10 @@ export default function SettingsView({ settings, onUpdateSettings }) {
 
       <form onSubmit={handleSubmit} className="space-y-6">
         {/* Risk & Safety Policy */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4 transition-colors">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-200 dark:border-slate-800">
             <Shield className="w-4 h-4 text-amber-500" />
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
               Security & Risk Governance
             </h3>
           </div>
@@ -81,13 +81,13 @@ export default function SettingsView({ settings, onUpdateSettings }) {
                 type="checkbox"
                 checked={formData.require_plan_review === 'true'}
                 onChange={(e) => setFormData({ ...formData, require_plan_review: e.target.checked ? 'true' : 'false' })}
-                className="mt-0.5 w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500"
+                className="mt-0.5 w-4 h-4 rounded text-indigo-600 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-indigo-500"
               />
               <div>
-                <span className="font-semibold text-slate-800 block">
+                <span className="font-semibold text-slate-800 dark:text-slate-200 block">
                   Mandatory Plan Review Before Execution (FR-04)
                 </span>
-                <span className="text-slate-500">
+                <span className="text-slate-500 dark:text-slate-400">
                   When enabled, all decomposed task plans pause in 'Planned' status until a business manager clicks 'Approve & Dispatch'.
                 </span>
               </div>
@@ -98,13 +98,13 @@ export default function SettingsView({ settings, onUpdateSettings }) {
                 type="checkbox"
                 checked={formData.simulate_bulk_email === 'true'}
                 onChange={(e) => setFormData({ ...formData, simulate_bulk_email: e.target.checked ? 'true' : 'false' })}
-                className="mt-0.5 w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500"
+                className="mt-0.5 w-4 h-4 rounded text-indigo-600 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-indigo-500"
               />
               <div>
-                <span className="font-semibold text-slate-800 block">
+                <span className="font-semibold text-slate-800 dark:text-slate-200 block">
                   Sandbox Simulation Mode for High-Risk External Actions (AC-09)
                 </span>
-                <span className="text-slate-500">
+                <span className="text-slate-500 dark:text-slate-400">
                   Dispatches external emails to simulated sandbox mailboxes clearly tagged as 'Simulated (Sandbox)' to eliminate accidental spam.
                 </span>
               </div>
@@ -115,13 +115,13 @@ export default function SettingsView({ settings, onUpdateSettings }) {
                 type="checkbox"
                 checked={formData.auto_approve_medium_risk === 'true'}
                 onChange={(e) => setFormData({ ...formData, auto_approve_medium_risk: e.target.checked ? 'true' : 'false' })}
-                className="mt-0.5 w-4 h-4 rounded text-indigo-600 border-slate-300 focus:ring-indigo-500"
+                className="mt-0.5 w-4 h-4 rounded text-indigo-600 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 focus:ring-indigo-500"
               />
               <div>
-                <span className="font-semibold text-slate-800 block">
+                <span className="font-semibold text-slate-800 dark:text-slate-200 block">
                   Auto-Permit Medium-Risk Database Operations (FR-15)
                 </span>
-                <span className="text-slate-500">
+                <span className="text-slate-500 dark:text-slate-400">
                   Allows Data/CRM Agent to insert and update vetted records within approved schema without stopping the pipeline.
                 </span>
               </div>
@@ -130,48 +130,48 @@ export default function SettingsView({ settings, onUpdateSettings }) {
         </div>
 
         {/* Reliability & Retry Limits */}
-        <div className="bg-white rounded-xl border border-slate-200 p-6 shadow-xs space-y-4">
-          <div className="flex items-center gap-2 pb-3 border-b border-slate-200">
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 p-6 shadow-xs space-y-4 transition-colors">
+          <div className="flex items-center gap-2 pb-3 border-b border-slate-200 dark:border-slate-800">
             <RefreshCw className="w-4 h-4 text-blue-500" />
-            <h3 className="text-sm font-semibold text-slate-900">
+            <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">
               Reliability & Retry Limits (FR-21, FR-22)
             </h3>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">
+              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Maximum Bounded Retries:
               </label>
               <select
                 value={formData.max_retries}
                 onChange={(e) => setFormData({ ...formData, max_retries: e.target.value })}
-                className="w-full p-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
               >
-                <option value="1">1 attempt (No retries)</option>
-                <option value="2">2 attempts</option>
-                <option value="3">3 attempts (Recommended)</option>
-                <option value="5">5 attempts</option>
+                <option value="1" className="dark:bg-slate-900">1 attempt (No retries)</option>
+                <option value="2" className="dark:bg-slate-900">2 attempts</option>
+                <option value="3" className="dark:bg-slate-900">3 attempts (Recommended)</option>
+                <option value="5" className="dark:bg-slate-900">5 attempts</option>
               </select>
-              <span className="text-[11px] text-slate-400 mt-1 block">
+              <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 block">
                 Prevents runaway loops on unrecoverable external failures.
               </span>
             </div>
 
             <div>
-              <label className="block font-semibold text-slate-700 mb-1">
+              <label className="block font-semibold text-slate-700 dark:text-slate-300 mb-1">
                 Exponential Backoff Factor (seconds):
               </label>
               <select
                 value={formData.retry_backoff_seconds}
                 onChange={(e) => setFormData({ ...formData, retry_backoff_seconds: e.target.value })}
-                className="w-full p-2.5 rounded-lg border border-slate-300 bg-white focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="w-full p-2.5 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-1 focus:ring-indigo-500 cursor-pointer"
               >
-                <option value="0.5">0.5s initial backoff</option>
-                <option value="1.0">1.0s initial backoff (Standard)</option>
-                <option value="2.0">2.0s initial backoff</option>
+                <option value="0.5" className="dark:bg-slate-900">0.5s initial backoff</option>
+                <option value="1.0" className="dark:bg-slate-900">1.0s initial backoff (Standard)</option>
+                <option value="2.0" className="dark:bg-slate-900">2.0s initial backoff</option>
               </select>
-              <span className="text-[11px] text-slate-400 mt-1 block">
+              <span className="text-[11px] text-slate-400 dark:text-slate-500 mt-1 block">
                 Initial pause before retrying transient exceptions.
               </span>
             </div>
@@ -179,16 +179,16 @@ export default function SettingsView({ settings, onUpdateSettings }) {
         </div>
 
         {/* System Deployment Architecture */}
-        <div className="bg-slate-50 rounded-xl border border-slate-200 p-5 text-xs space-y-2 text-slate-600">
-          <div className="flex items-center gap-2 font-semibold text-slate-800">
-            <Server className="w-4 h-4 text-slate-600" />
+        <div className="bg-slate-50 dark:bg-slate-900/60 rounded-xl border border-slate-200 dark:border-slate-800 p-5 text-xs space-y-2 text-slate-600 dark:text-slate-400">
+          <div className="flex items-center gap-2 font-semibold text-slate-800 dark:text-slate-200">
+            <Server className="w-4 h-4 text-slate-600 dark:text-slate-400" />
             <span>Architecture & Environment Details</span>
           </div>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 font-mono text-[11px] pt-1">
             <div>Backend: Python FastAPI</div>
             <div>Database: SQLite 3 (WAL)</div>
             <div>Frontend: React + Tailwind CSS</div>
-            <div>Runtime: Node v24 + Python 3.13</div>
+            <div>Theme: Dual Light/Dark Mode</div>
           </div>
         </div>
 

@@ -51,6 +51,17 @@ export const api = {
     return res.json();
   },
 
+  resumeTask: async (taskId, forceSuccess = false, reviewerName = 'Authorized Reviewer') => {
+    const res = await fetch(`${BASE_URL}/tasks/${taskId}/resume?force_success=${forceSuccess}&reviewer_name=${encodeURIComponent(reviewerName)}`, {
+      method: 'POST',
+    });
+    if (!res.ok) {
+      const err = await res.json();
+      throw new Error(err.detail || 'Failed to resume task');
+    }
+    return res.json();
+  },
+
   getApprovals: async (pendingOnly = false) => {
     const res = await fetch(`${BASE_URL}/approvals?pending_only=${pendingOnly}`);
     if (!res.ok) throw new Error('Failed to fetch approvals');

@@ -357,3 +357,42 @@ class Orchestrator:
         # Resume background orchestrator pipeline
         if decision in ("Approved", "Edited"):
             threading.Thread(target=cls._run_pipeline, args=(task_id,), daemon=True).start()
+
+    @classmethod
+    def resume_task(cls, task_id: str, force_success: bool = False, reviewer_name: str = "Authorized Reviewer"):
+        """
+        Resumes a task that is in 'Needs Human Review' or 'Failed'.
+        If force_success is True, marks any failed subtasks as Completed with a human verification override note.
+        If force_success is False, resets failed subtasks back to Pending to retry execution.
+        """
+        conn = get_connection()
+        cursor = conn.cursor()
+        now = datetime.utcnow().isoformat() + "Z"
+
+        if force_success:
+            cursor.execute("""
+            UPDATE subtasks 
+            SET status = 'Completed', output_summary = json_object('status', 'Executed (Real)', 'message', 'Manually verified and approved by human operator.')
+            WHERE task_id = ? AND status = 'Failed'
+            """, (task_id,))
+        else:
+            cursor.execute("""
+            UPDATE subtasks 
+            SET status = 'Pending', output_summary = NULL
+            WHERE task_id = ? AND status = 'Failed'
+            """, (task_id,))
+
+        cursor.execute("UPDATE tasks SET status = 'Running', updated_at = ? WHERE task_id = ?", (now, task_id))
+        conn.commit()
+        conn.close()
+
+        # Call log_action AFTER conn is committed and closed to avoid SQLite write locks
+        if force_success:
+            log_action(task_id, None, "manual_human_override", "operator", "Executed (Real)",
+                       f"Human reviewer {reviewer_name} manually approved and bypassed failed subtask.", None, {})
+        else:
+            log_action(task_id, None, "retry_resumed", "orchestrator", "Executed (Real)",
+                       f"Human reviewer {reviewer_name} reset failed steps to retry execution.", None, {})
+
+        threading.Thread(target=cls._run_pipeline, args=(task_id,), daemon=True).start()
+        return {"message": "Pipeline resumed successfully", "task_id": task_id}
