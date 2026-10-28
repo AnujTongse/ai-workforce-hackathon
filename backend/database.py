@@ -8,6 +8,11 @@ from typing import Dict, Any, List, Optional
 def get_db_path():
     if "AI_WORKFORCE_DB" in os.environ:
         return os.environ["AI_WORKFORCE_DB"]
+
+    # Vercel's function filesystem is read-only except for /tmp. This database
+    # is intentionally ephemeral; use an external database for durable storage.
+    if os.environ.get("VERCEL") == "1":
+        return "/tmp/ai_workforce.db"
     
     local_path = os.path.join(os.path.dirname(__file__), "ai_workforce.db")
     try:

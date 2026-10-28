@@ -73,6 +73,10 @@ Per SRS Section 3.4 and Section 9:
    - **Dashboard**: `http://localhost:8000`
    - **Interactive API Documentation**: `http://localhost:8000/docs`
 
+### Vercel Deployment
+
+The FastAPI backend and Vite frontend deploy together through Vercel. The demo uses SQLite in `/tmp` on Vercel, so changes are temporary and may differ between function instances. Use a managed external database for durable shared data.
+
 ### Demo Scenarios to Test in the Dashboard
 
 1. **Successful Multi-Agent Task**:

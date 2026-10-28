@@ -1,5 +1,6 @@
 import os
 import json
+import sys
 from datetime import datetime
 from typing import Optional, List, Dict, Any
 
@@ -7,6 +8,12 @@ from fastapi import FastAPI, HTTPException, Query, BackgroundTasks
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import FileResponse
+
+# Vercel imports this module from the repository root. Keep backend-local
+# imports working in both that environment and the existing local launcher.
+BACKEND_DIR = os.path.dirname(os.path.abspath(__file__))
+if BACKEND_DIR not in sys.path:
+    sys.path.insert(0, BACKEND_DIR)
 
 from database import init_db, get_connection, log_action
 from models import (

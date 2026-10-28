@@ -1,0 +1,11 @@
+[project]
+name = "ai-workforce-hackathon"
+version = "1.0.0"
+requires-python = ">=3.12"
+dependencies = ["fastapi>=0.115,<1.0"]
+
+[tool.vercel]
+entrypoint = "backend.main:app"
+
+[tool.vercel.scripts]
+build = "npm --prefix frontend ci && npm --prefix frontend run build"
