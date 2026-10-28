@@ -6,6 +6,7 @@ class TaskSubmitRequest(BaseModel):
     requester_id: Optional[str] = "u_owner"
     auto_execute: Optional[bool] = True
     template_id: Optional[str] = None
+    difficulty: Optional[str] = None # 'Easy', 'Medium', 'Hard', or None (Auto-detect)
 
 class PlanReviewRequest(BaseModel):
     task_id: str

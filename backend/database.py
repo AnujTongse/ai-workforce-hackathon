@@ -69,10 +69,17 @@ def init_db():
         plan_summary TEXT,
         status TEXT NOT NULL, -- 'Draft', 'Planned', 'Running', 'Awaiting Approval', 'Completed', 'Failed', 'Needs Human Review', 'Cancelled'
         risk_level TEXT NOT NULL, -- 'Low', 'Medium', 'High'
+        difficulty TEXT DEFAULT 'Medium', -- 'Easy', 'Medium', 'Hard'
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL
     )
     """)
+
+    # Column migration for existing installations
+    try:
+        cursor.execute("ALTER TABLE tasks ADD COLUMN difficulty TEXT DEFAULT 'Medium'")
+    except Exception:
+        pass
 
     # Subtasks
     cursor.execute("""
@@ -157,6 +164,7 @@ def init_db():
         "max_retries": "3",
         "retry_backoff_seconds": "1.0",
         "require_plan_review": "false",
+        "require_hard_task_approval": "true", # Ask for approval before tasks that are hard level
         "simulate_bulk_email": "true",
         "simulate_crm_latency": "false",
         "failure_simulation_mode": "off", # 'off', 'crm_error', 'email_error', 'validation_error'
